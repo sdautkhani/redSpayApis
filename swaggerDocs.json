@@ -1,0 +1,195 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Swagger Documentation for RedSpay Api's",
+        "version": "1.0.0",
+        "title": "RedSpay Api's"
+    },
+    "schemes": [
+        "http"
+    ],
+    "host": "localhost:3000",
+    "basePath": "/",
+    "paths": {
+        "/login/signin": {
+            "post": {
+                "summary": "Allow users to login",
+                "description": "Allow users to login",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User Login object",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "handleName": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "handleName": {
+                                    "type": "string"
+                                },
+                                "token": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/login/register": {
+            "post": {
+                "summary": "Allow New user to signup",
+                "description": "Allow New user to signup",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User Signup object",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserSignupRequest"
+                        }
+                    }
+                ],
+                
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/login/varifyToken": {
+            "get": {
+                "summary": "validate Token",
+                "description": "validate Token",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+   
+    "definitions": {
+        "InvalidResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "error":{
+                    "type":"object"
+                }
+            }
+        },
+        "UserSignupRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "handleName": {
+                    "type": "string"
+                },
+                "companyName": {
+                    "type": "string"
+                },
+                "rsLicenceKey": {
+                    "type": "string"
+                },
+                "contactNumber": {
+                    "type": "integer"
+                },
+                "emailId": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "paypalAccount": {
+                    "type": "string"
+                },
+                "joinDate": {
+                    "type": "dateTime"
+                },
+                "avatar": {
+                    "type": "string"
+                }
+            }
+        },
+        "SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "details":{
+                    "type":"object"
+                }
+            }
+        }
+    }
+}
