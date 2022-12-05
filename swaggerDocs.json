@@ -176,8 +176,14 @@
                     "type": "dateTime"
                 },
                 "avatar": {
-                    "type": "string"
+                    "type": "file"
+                },
+                "idProof1": {
+                    "type": "file"
+                }, "idProof2": {
+                    "type": "file"
                 }
+
             }
         },
         "SuccessResponse": {

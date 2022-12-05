@@ -4,7 +4,7 @@ const { Buffer } = require('safe-buffer');
 const usersSchema = mongoose.Schema({
     name: {
         type: String,
-        requireed: [true, "Email address is required!"],
+        requireed: [true, "Name is required!"],
         trim: true,
         minLength: [2, "Min 2 characters accepted"],
         maxLength: [20, "Max 20 characters accepted"]
@@ -13,7 +13,7 @@ const usersSchema = mongoose.Schema({
         type: String,
         requireed: [true, "Handle name is required!"],
         trim: true,
-        unique: [true, "Handle name already exists!"],
+        // unique: [true, "Handle name already exists!"],
         minLength: [4, "Min 4 characters accepted"],
         maxLength: [20, "Max 20 characters accepted"]
     },
