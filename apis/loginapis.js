@@ -66,9 +66,12 @@ router.post("/register",upload.single('avatar'), async (request, response) => {
         });
     }
     const hashedPassword = await bcrypt.hash(request.body.password, 10);
-    const buffer = await sharp(
+    let buffer=null;
+    if(request.file){
+     buffer = await sharp(
         path.join(__dirname, `../upload/${request.file.filename}`),
       ).png().toBuffer();
+    }
     const users = new Users({
         name: request.body.name,
         handleName: request.body.handleName,
