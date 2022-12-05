@@ -6,7 +6,11 @@ var router = express.Router();
 const jverify = require("../middleware/JWT.js");
 const bcrypt = require("bcryptjs");
 const Users = require('../model/users');
-
+const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+let upload = multer({ dest: "upload/" });
 //API to SignIN by User name and Password
 router.post("/signin", async function (request, response) {
     var resultData = [];
@@ -54,7 +58,7 @@ router.post("/signin", async function (request, response) {
 });
 
 //API For SignUp
-router.post("/register", async (request, response) => {
+router.post("/register",upload.single('avatar'), async (request, response) => {
     let pwd_regex = new RegExp('(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8}');
     if (!pwd_regex.test(request.body.password)) {
         return response.status(500).json({
@@ -62,6 +66,9 @@ router.post("/register", async (request, response) => {
         });
     }
     const hashedPassword = await bcrypt.hash(request.body.password, 10);
+    const buffer = await sharp(
+        path.join(__dirname, `../upload/${request.file.filename}`),
+      ).png().toBuffer();
     const users = new Users({
         name: request.body.name,
         handleName: request.body.handleName,
@@ -73,7 +80,7 @@ router.post("/register", async (request, response) => {
         paypalAccount: request.body.paypalAccount,
         joinDate: new Date(),
         createdBy: new Date(),
-        avatar: request.body.avatar
+        avatar: buffer
     });
     users.save().then(() => {
         response.status(200).json({
