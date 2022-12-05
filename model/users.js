@@ -64,7 +64,14 @@ const usersSchema = mongoose.Schema({
     },
     avatar:{
         type:Buffer          
+    },
+    idProof1:{
+        type:Buffer          
+    },
+    idProof2:{
+        type:Buffer          
     }
+
 
 
 })
