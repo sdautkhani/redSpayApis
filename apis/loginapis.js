@@ -121,7 +121,7 @@ router.post("/register",upload.fields([{
         emailId: request.body.emailId,
         password: hashedPassword,
         paypalAccount: request.body.paypalAccount,
-        joinDate: new Date(),
+        joinDate: request.body.joinDate,
         createdBy: new Date(),
         avatar: buffer,
         idProof1:idBuffer1,
@@ -147,7 +147,7 @@ router.post("/register",upload.fields([{
                     response.status(400).json({
                         code:400,
                         message: msg.substring(msg.indexOf(':'),msg.length-1),
-                        error:error
+                       
                     });
 
                 }else{
