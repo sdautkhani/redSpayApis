@@ -78,7 +78,7 @@
                     "application/json"
                 ],
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "parameters": [
                     {
@@ -88,6 +88,17 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/UserSignupRequest"
+                        },
+                        "encoding":{
+                            "avatar": {
+                                "contentType": ["image/png", "image/jpeg"]
+                            },
+                            "idProof1": {
+                                "contentType": ["image/png", "image/jpeg"]
+                            }, 
+                            "idProof2": {
+                                "contentType": ["image/png", "image/jpeg"]
+                            }
                         }
                     }
                 ],
@@ -160,8 +171,8 @@
                 "rsLicenceKey": {
                     "type": "string"
                 },
-                "contactNumber": {
-                    "type": "integer"
+                "cellName": {
+                    "type": "string"
                 },
                 "emailId": {
                     "type": "string"
@@ -176,12 +187,13 @@
                     "type": "dateTime"
                 },
                 "avatar": {
-                    "type": "file"
+                    "type": "string"
                 },
                 "idProof1": {
-                    "type": "file"
-                }, "idProof2": {
-                    "type": "file"
+                    "type": "string"
+                }, 
+                "idProof2": {
+                    "type": "string"
                 }
 
             }

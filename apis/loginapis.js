@@ -117,7 +117,7 @@ router.post("/register",upload.fields([{
         handleName: request.body.handleName,
         companyName: request.body.companyName,
         rsLicenceKey: request.body.rsLicenceKey,
-        contactNumber: request.body.contactNumber,
+        cellName: request.body.cellName,
         emailId: request.body.emailId,
         password: hashedPassword,
         paypalAccount: request.body.paypalAccount,

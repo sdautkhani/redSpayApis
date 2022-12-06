@@ -40,7 +40,7 @@ const usersSchema = mongoose.Schema({
        // match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email address!']
     },
     cellName: {
-        type: Number,
+        type: String,
         // required: [true, "Contact number is required!"],
         // minLength: [10, "Contact number should be of 10 digits"],
         // maxLength: [10, "Contact number should be of 10 digits"]
