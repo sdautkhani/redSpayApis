@@ -194,6 +194,15 @@
                 }, 
                 "idProof2": {
                     "type": "string"
+                },
+                "idProof1Status": {
+                    "type": "boolean"
+                }, 
+                "idProof2Status": {
+                    "type": "boolean"
+                },
+                "status": {
+                    "type": "boolean"
                 }
 
             }

@@ -58,7 +58,7 @@ const usersSchema = mongoose.Schema({
         default: Date.now,
        // required: [true, "Joining date is required!"]
      },
-    createdBy: {
+    createdOn: {
         type: Date,
         default: Date.now
     },
@@ -66,10 +66,31 @@ const usersSchema = mongoose.Schema({
         type:Buffer          
     },
     idProof1:{
-        type:Buffer          
+        type:String          
     },
     idProof2:{
-        type:Buffer          
+        type:String          
+    },
+    idProof1Status:{
+        type:String          
+    },
+    idProof2Status:{
+        type:String          
+    },
+    status:{
+        type:String
+    },
+    idProof1Reason:{
+        type:String
+    },
+    idProof1Reason:{
+        type:String
+    },
+    idProof1Reason:{
+        type:String
+    },
+    reason:{
+        type:String
     }
 
 

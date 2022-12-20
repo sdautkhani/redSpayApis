@@ -9,6 +9,7 @@ const config = require("./config");
 const MONGODB_URI = config.mongodburi;
 const swaggerDocument = require("./swaggerDocs.json");
 const loginapis = require("./apis/loginapis.js");
+const adminapis = require("./apis/adminapis.js");
 
 
 var app = express();
@@ -37,6 +38,7 @@ app.listen(port, async () => {
     console.log("Listen port",port);
 });
 app.use('/login', loginapis);
+app.use('/admin', adminapis);
 
 
 

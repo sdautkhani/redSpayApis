@@ -3,13 +3,14 @@ var jwt = require('jsonwebtoken');
 var router = express.Router();
 const jverify = require("../middleware/JWT.js");
 const bcrypt = require("bcryptjs");
-const Users = require('../model/users');
+const adminUser = require('../model/adminUser');
 
 //API to SignIN by User name and Password
 router.post("/signin", async function (request, response) {
+    console.log("signin");
     var resultData = [];
     var token;
-    Users.findOne({ handleName: request.body.handleName }).then(
+    adminUser.findOne({ userName: request.body.userName }).then(
         async (userDtls) => {
             if (userDtls != null) {
                 await bcrypt.compare(request.body.password, userDtls.password, async (err, result) => {
@@ -17,13 +18,7 @@ router.post("/signin", async function (request, response) {
                     if (result == true) {
                         var data = {
                            
-                            "UserID": userDtls.handleName,
-                            "RequestID":"",
-                            "RequestorID":"",
-                            "ActionID":"",
-                            "ReasonID":"",
-                            "EntityID":""
-
+                            "userName": userDtls.userName
                         }
                         token = jwt.sign({
                             data
@@ -36,7 +31,6 @@ router.post("/signin", async function (request, response) {
                         resultData = {
                             token: token,
                             id: userDtls._id,
-                            handleName: userDtls.handleName,
                             message: "LoggedIn successful.",
                             code:200,
                         };
@@ -59,8 +53,6 @@ router.post("/signin", async function (request, response) {
         })
 
 });
-
-//API For SignUp
 router.post("/register", async (request, response) => {
     let pwd_regex = new RegExp('(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8}');
     // if (!pwd_regex.test(request.body.password)) {
@@ -73,29 +65,13 @@ router.post("/register", async (request, response) => {
     const hashedPassword = await bcrypt.hash(request.body.password, 10);
     console.log(hashedPassword);
    
-    const users = new Users({
-        name: request.body.name,
-        handleName: request.body.handleName,
-        companyName: request.body.companyName,
-        rsLicenceKey: request.body.rsLicenceKey,
-        cellName: request.body.cellName,
-        emailId: request.body.emailId,
+    const admin = new adminUser({
+        userName: request.body.userName,
         password: hashedPassword,
-        paypalAccount: request.body.paypalAccount,
-        joinDate: request.body.joinDate,
-        createdOn: new Date(),
-        avatar: request.body.avatar,
-        idProof1:request.body.idProof1,
-        idProof2:request.body.idProof2,
-        idProof1Status:request.body.idProof1Status,
-        idProof2Status:request.body.idProof2Status,
-        status:request.body.status,
-        idProof1Reason:request.body.idProof1Reason,
-        idProof2Reason:request.body.idProof2Reason,
-        reason:request.body.reason,
+        createdOn: new Date()
         
     });
-    users.save().then(() => {
+    admin.save().then(() => {
         response.status(200).json({
             code:200,
             message: 'User created successfully!'
@@ -130,34 +106,4 @@ router.post("/register", async (request, response) => {
         }
     );
 });
-//API to SignIN by User name and Password
-router.get("/varifyToken", async function (request, response) {
-    await jverify.validateToken(request, response).then((data) => {
-        if (!data.status) {
-            response.status(400).send({ 
-                code:400,
-                message: "Invalid Token!"
-         });
-            
-        } else {
-            response.status(200).send({
-                code:200,
-                 message: "Authentication successful!",
-                 details:data.details
-                 });
-        }
-    })
-    .catch((error)=>{
-        response.status(500).send({
-            code:500,
-            message: 'Authentication fail!',
-            error: error
-        });
-    })
-
-});
-
-
-
-
 module.exports = router;
