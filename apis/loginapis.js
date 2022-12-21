@@ -4,7 +4,7 @@ var router = express.Router();
 const jverify = require("../middleware/JWT.js");
 const bcrypt = require("bcryptjs");
 const Users = require('../model/users');
-
+const constant=require('../constants.js');
 //API to SignIN by User name and Password
 router.post("/signin", async function (request, response) {
     var resultData = [];
@@ -63,16 +63,14 @@ router.post("/signin", async function (request, response) {
 //API For SignUp
 router.post("/register", async (request, response) => {
     let pwd_regex = new RegExp('(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8}');
-    // if (!pwd_regex.test(request.body.password)) {
-    //     return response.status(400).json({
-    //         code:400,
-    //         message: "Password should conatain minimum 8 character with at least a symbol, upper and lower case letters and a number"
-    //     });
-    // }
+    if (!pwd_regex.test(request.body.password)) {
+        return response.status(400).json({
+            code:400,
+            message: "Password should conatain minimum 8 character with at least a symbol, upper and lower case letters and a number"
+        });
+    }
    
     const hashedPassword = await bcrypt.hash(request.body.password, 10);
-    console.log(hashedPassword);
-   
     const users = new Users({
         name: request.body.name,
         handleName: request.body.handleName,
@@ -87,9 +85,9 @@ router.post("/register", async (request, response) => {
         avatar: request.body.avatar,
         idProof1:request.body.idProof1,
         idProof2:request.body.idProof2,
-        idProof1Status:request.body.idProof1Status,
-        idProof2Status:request.body.idProof2Status,
-        status:request.body.status,
+        idProof1Status:constant.status.get(request.body.idProof1Status).value,
+        idProof2Status:constant.status.get(request.body.idProof2Status).value,
+        status:constant.status.get(request.body.status).value,
         idProof1Reason:request.body.idProof1Reason,
         idProof2Reason:request.body.idProof2Reason,
         reason:request.body.reason,
