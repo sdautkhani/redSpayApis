@@ -139,13 +139,19 @@ router.get("/getUserList/:status/:pg", async (req, res) => {
         }
 
     ]);
-    if (Object.keys(userList[0].metadata).length > 0) {
+   
+      if (Object.keys(userList[0].metadata).length > 0) {
         let totalcount = userList[0].metadata[0].total;
-        let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.TOKEN_PER_PAGE));
+        console.log(totalcount);
+        let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
+        console.log(numberOfPages);
         userList[0].metadata[0].numberOfPages = numberOfPages;
+        console.log(numberOfPages);
     }
+
+
     if (Object.keys(userList[0].data).length > 0) {
-        console.log(userList[0]);
+       // console.log(userList[0]);
         await userList[0].data.map(data => {
             data.idProof1Status = constant.status.get(data.idProof1Status == undefined ? 'Pending' : data.idProof1Status).key;
             data.idProof2Status = constant.status.get(data.idProof2Status == undefined ? 'Pending' : data.idProof2Status).key;
