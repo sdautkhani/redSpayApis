@@ -43,6 +43,11 @@ router.post("/signin", async function (request, response) {
                         });
                     }
                 });
+            }else {
+                response.status(500).json({
+                    code: 400,
+                    message: "Invalid User."
+                });
             }
 
         }).catch((error) => {
