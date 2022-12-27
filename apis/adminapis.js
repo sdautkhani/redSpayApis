@@ -119,7 +119,7 @@ router.get("/getUserList/:status/:pg", async (req, res) => {
     var statusConditions = {};
     if (status != "All") {
         statusConditions = {
-            "status": constant.status.get(status).value
+            "status": (constant.status.get(status).value).toString()
         }
     }
 try{
@@ -151,17 +151,16 @@ try{
 
     if (Object.keys(userList[0].data).length > 0) {
         await userList[0].data.map(data => {
-            console.log( data.idProof1Status);
-            console.log(constant.status.get(data.idProof1Status == undefined ? 1 : parseInt(data.idProof1Status)));
-            data.idProof1Status = constant.status.get(data.idProof1Status == undefined ? 1 : parseInt(data.idProof1Status)).key;
-            data.idProof2Status = constant.status.get(data.idProof2Status == undefined ? 1 : parseInt(data.idProof2Status)).key;
-            data.status = constant.status.get(data.status == undefined ? 1 : parseInt(data.status)).key;
+            data.idProof1Status =data.idProof1Status == undefined?'': constant.status.get(parseInt(data.idProof1Status)).key;
+            data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
+            data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
         });
     }
 
     res.send(userList);
 }catch(error){
-    res.send({Status:'500',msg:error})
+    res.send({ code: 500,
+        message: error.message,})
 }
 });
 router.post("/updateUserStatus", async (request, response) => {
@@ -170,6 +169,16 @@ router.post("/updateUserStatus", async (request, response) => {
        
     // });
     const data=request.body.statusDetails;
+    if(data.idProof1Status){
+        data.idProof1Status=constant.status.get(data.idProof1Status).value;
+    }
+    if(data.idProof2Status){
+        data.idProof2Status=constant.status.get(data.idProof2Status).value;
+    }
+    if(data.status){
+        data.status=constant.status.get(data.status).value;
+    }
+   
     Users.updateOne({ "_id": request.body._id },data).then(() => {
         response.status(200).json({
             code: 200,
