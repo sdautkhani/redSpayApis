@@ -83,13 +83,7 @@ const usersSchema = mongoose.Schema({
     idProof1Reason:{
         type:String
     },
-    idProof1Reason:{
-        type:String
-    },
-    idProof1Reason:{
-        type:String
-    },
-    reason:{
+    idProof2Reason:{
         type:String
     }
 

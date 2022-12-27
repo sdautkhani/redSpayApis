@@ -6,6 +6,8 @@ const bcrypt = require("bcryptjs");
 const adminUser = require('../model/adminUser');
 const Users = require('../model/users');
 const constant = require('../constants.js');
+const Enum = require("enum");
+Enum.register();
 //API to SignIN by User name and Password
 router.post("/signin", async function (request, response) {
     var resultData = [];
@@ -120,7 +122,7 @@ router.get("/getUserList/:status/:pg", async (req, res) => {
             "status": constant.status.get(status).value
         }
     }
-
+try{
     const userList = await Users.aggregate([
         {
             $match: statusConditions
@@ -149,13 +151,18 @@ router.get("/getUserList/:status/:pg", async (req, res) => {
 
     if (Object.keys(userList[0].data).length > 0) {
         await userList[0].data.map(data => {
-            data.idProof1Status = constant.status.get(data.idProof1Status == undefined ? 'Pending' : data.idProof1Status).key;
-            data.idProof2Status = constant.status.get(data.idProof2Status == undefined ? 'Pending' : data.idProof2Status).key;
-            data.status = constant.status.get(data.status == undefined ? 'Pending' : data.status).key;
+            console.log( data.idProof1Status);
+            console.log(constant.status.get(data.idProof1Status == undefined ? 1 : parseInt(data.idProof1Status)));
+            data.idProof1Status = constant.status.get(data.idProof1Status == undefined ? 1 : parseInt(data.idProof1Status)).key;
+            data.idProof2Status = constant.status.get(data.idProof2Status == undefined ? 1 : parseInt(data.idProof2Status)).key;
+            data.status = constant.status.get(data.status == undefined ? 1 : parseInt(data.status)).key;
         });
     }
 
-    res.json(userList);
+    res.send(userList);
+}catch(error){
+    res.send({Status:'500',msg:error})
+}
 });
 router.post("/updateUserStatus", async (request, response) => {
    
