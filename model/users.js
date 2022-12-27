@@ -63,7 +63,7 @@ const usersSchema = mongoose.Schema({
         default: Date.now
     },
     avatar:{
-        type:Buffer          
+        type:String          
     },
     idProof1:{
         type:String          
