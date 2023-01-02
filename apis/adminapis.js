@@ -45,7 +45,7 @@ router.post("/signin", async function (request, response) {
                         });
                     }
                 });
-            }else {
+            } else {
                 response.status(500).json({
                     code: 400,
                     message: "Invalid User."
@@ -113,131 +113,182 @@ router.post("/register", async (request, response) => {
         }
     );
 });
-router.get("/getUserList/:status/:pg", async (req, res) => {
+router.get("/getUserList/:name/:status/:pg", async (req, res) => {
     var pageNumber = parseInt(req.params.pg);
     var status = req.params.status;
     var statusConditions = {};
-    if (status != "All") {
-        statusConditions = {
-            "status": (constant.status.get(status).value).toString()
-        }
+    var statusConditions = {};
+    var searchCondition=[];
+    if (status != "All"){
+        statusConditions.status=(constant.status.get(status).value).toString();
+    } 
+    if(req.params.name!='null'){
+        searchCondition= 
+            [
+                { name: req.params.name }, 
+                { emailId: req.params.name }
+            ];
+    }else{
+        searchCondition= 
+        [
+            { }, 
+            {  }
+        ];
     }
-try{
-    const userList = await Users.aggregate([
-        {
-            $match: statusConditions
-        },
+    try {
+        const userList = await Users.aggregate([
+            {
+                $match:  {
+                    ...statusConditions,
+                    $or:[
+                        ...searchCondition
+                    ]
+                }
+                
+            },
 
-        {
-            $facet: {
-                metadata: [{ $count: "total" }],
-                data: [
-                    { $sort: { _id: -1 } },
+            {
+                $facet: {
+                    metadata: [{ $count: "total" }],
+                    data: [
+                        
+                        { $sort: { _id: -1 } },
 
-                    { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
-                    { $limit: (parseInt(process.env.USER_PER_PAGE)) }]
+                        { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
+                        { $limit: (parseInt(process.env.USER_PER_PAGE)) }]
+                }
             }
+
+        ]);
+
+        if (Object.keys(userList[0].metadata).length > 0) {
+            let totalcount = userList[0].metadata[0].total;
+            let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
+            userList[0].metadata[0].numberOfPages = numberOfPages;
+
         }
 
-    ]);
-   
-      if (Object.keys(userList[0].metadata).length > 0) {
-        let totalcount = userList[0].metadata[0].total;
-        let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
-        userList[0].metadata[0].numberOfPages = numberOfPages;
-     
+
+        if (Object.keys(userList[0].data).length > 0) {
+            await userList[0].data.map(data => {
+                data.idProof1Status = data.idProof1Status == undefined ? '' : constant.status.get(parseInt(data.idProof1Status)).key;
+                data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
+                data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
+            });
+        }
+
+        res.send(userList);
+    } catch (error) {
+        res.send({
+            code: 500,
+            message: error.message,
+        })
     }
-
-
-    if (Object.keys(userList[0].data).length > 0) {
-        await userList[0].data.map(data => {
-            data.idProof1Status =data.idProof1Status == undefined?'': constant.status.get(parseInt(data.idProof1Status)).key;
-            data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
-            data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
-        });
-    }
-
-    res.send(userList);
-}catch(error){
-    res.send({ code: 500,
-        message: error.message,})
-}
 });
-router.get("/searchUserByName/:name/:pg", async (req, res) => {
+router.get("/searchUserByName/:name/:status/:pg", async (req, res) => {
     var pageNumber = parseInt(req.params.pg);
-   
-try{
-    const userList = await Users.aggregate([
-        {
-            $match: {$or:[{name:req.params.name},{emailId:req.params.name}]}
-        },
+    var status = req.params.status;
+    var statusConditions = {};
+    var searchCondition=[];
+    if (status != "All"){
+        statusConditions.status=(constant.status.get(status).value).toString();
+    } 
+    if(req.params.name!='null'){
+        searchCondition= 
+            [
+                { name: req.params.name }, 
+                { emailId: req.params.name }
+            ];
+    }else{
+        searchCondition= 
+        [
+            { }, 
+            {  }
+        ];
+    }
+        
+    
+console.log({...statusConditions,'$or':[...searchCondition]});
+    try {
+        const userList = await Users.aggregate([
+            {
+                $match:  {
+                    ...statusConditions,
+                    $or:[
+                        ...searchCondition
+                    ]
+                }
+                
+            },
 
-        {
-            $facet: {
-                metadata: [{ $count: "total" }],
-                data: [
-                    { $sort: { _id: -1 } },
+            {
+                $facet: {
+                    metadata: [{ $count: "total" }],
+                    data: [
+                        { $sort: { _id: -1 } },
 
-                    { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
-                    { $limit: (parseInt(process.env.USER_PER_PAGE)) }]
+                        { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
+                        { $limit: (parseInt(process.env.USER_PER_PAGE)) }]
+                }
             }
+
+        ]);
+
+        if (Object.keys(userList[0].metadata).length > 0) {
+            let totalcount = userList[0].metadata[0].total;
+            let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
+            userList[0].metadata[0].numberOfPages = numberOfPages;
+
         }
 
-    ]);
-   
-      if (Object.keys(userList[0].metadata).length > 0) {
-        let totalcount = userList[0].metadata[0].total;
-        let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
-        userList[0].metadata[0].numberOfPages = numberOfPages;
-     
+
+        if (Object.keys(userList[0].data).length > 0) {
+            await userList[0].data.map(data => {
+                data.idProof1Status = data.idProof1Status == undefined ? '' : constant.status.get(parseInt(data.idProof1Status)).key;
+                data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
+                data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
+            });
+        }
+
+        res.send(userList);
+    } catch (error) {
+        res.send({
+            code: 500,
+            message: error.message,
+        })
     }
-
-
-    if (Object.keys(userList[0].data).length > 0) {
-        await userList[0].data.map(data => {
-            data.idProof1Status =data.idProof1Status == undefined?'': constant.status.get(parseInt(data.idProof1Status)).key;
-            data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
-            data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
-        });
-    }
-
-    res.send(userList);
-}catch(error){
-    res.send({ code: 500,
-        message: error.message,})
-}
 });
 router.post("/updateUserStatus", async (request, response) => {
-   
+
     // const user = new Users({
-       
+
     // });
-    const data=request.body.statusDetails;
-    if(data.idProof1Status){
-        data.idProof1Status=constant.status.get(data.idProof1Status).value;
+    const data = request.body.statusDetails;
+    if (data.idProof1Status) {
+        data.idProof1Status = constant.status.get(data.idProof1Status).value;
     }
-    if(data.idProof2Status){
-        data.idProof2Status=constant.status.get(data.idProof2Status).value;
+    if (data.idProof2Status) {
+        data.idProof2Status = constant.status.get(data.idProof2Status).value;
     }
-    if(data.status){
-        data.status=constant.status.get(data.status).value;
+    if (data.status) {
+        data.status = constant.status.get(data.status).value;
     }
-   
-    Users.updateOne({ "_id": request.body._id },data).then(() => {
+
+    Users.updateOne({ "_id": request.body._id }, data).then(() => {
         response.status(200).json({
             code: 200,
             message: 'User created successfully!'
         });
     }).catch(
         (error) => {
-         
-                    response.status(500).json({
-                        code: 500,
-                        message: error.message,
-                    });
-                }
 
-          
+            response.status(500).json({
+                code: 500,
+                message: error.message,
+            });
+        }
+
+
     );
 });
 module.exports = router;
