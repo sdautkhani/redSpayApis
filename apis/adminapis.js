@@ -163,6 +163,50 @@ try{
         message: error.message,})
 }
 });
+router.get("/searchUserByName/:name/:pg", async (req, res) => {
+    var pageNumber = parseInt(req.params.pg);
+   
+try{
+    const userList = await Users.aggregate([
+        {
+            $match: {$or:[{name:req.params.name},{emailId:req.params.name}]}
+        },
+
+        {
+            $facet: {
+                metadata: [{ $count: "total" }],
+                data: [
+                    { $sort: { _id: -1 } },
+
+                    { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
+                    { $limit: (parseInt(process.env.USER_PER_PAGE)) }]
+            }
+        }
+
+    ]);
+   
+      if (Object.keys(userList[0].metadata).length > 0) {
+        let totalcount = userList[0].metadata[0].total;
+        let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
+        userList[0].metadata[0].numberOfPages = numberOfPages;
+     
+    }
+
+
+    if (Object.keys(userList[0].data).length > 0) {
+        await userList[0].data.map(data => {
+            data.idProof1Status =data.idProof1Status == undefined?'': constant.status.get(parseInt(data.idProof1Status)).key;
+            data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
+            data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
+        });
+    }
+
+    res.send(userList);
+}catch(error){
+    res.send({ code: 500,
+        message: error.message,})
+}
+});
 router.post("/updateUserStatus", async (request, response) => {
    
     // const user = new Users({
