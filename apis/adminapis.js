@@ -185,73 +185,30 @@ router.get("/getUserList/:name/:status/:pg", async (req, res) => {
         })
     }
 });
-router.get("/searchUserByName/:name/:status/:pg", async (req, res) => {
-    var pageNumber = parseInt(req.params.pg);
-    var status = req.params.status;
-    var statusConditions = {};
-    var searchCondition=[];
-    if (status != "All"){
-        statusConditions.status=(constant.status.get(status).value).toString();
-    } 
-    if(req.params.name!='null'){
-        searchCondition= 
-            [
-                { name: req.params.name }, 
-                { emailId: req.params.name }
-            ];
-    }else{
-        searchCondition= 
-        [
-            { }, 
-            {  }
-        ];
-    }
-        
-    
-console.log({...statusConditions,'$or':[...searchCondition]});
+router.get("/statusCount", async (req, res) => {
+ 
     try {
-        const userList = await Users.aggregate([
-            {
-                $match:  {
-                    ...statusConditions,
-                    $or:[
-                        ...searchCondition
-                    ]
-                }
-                
-            },
-
-            {
-                $facet: {
-                    metadata: [{ $count: "total" }],
-                    data: [
-                        { $sort: { _id: -1 } },
-
-                        { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
-                        { $limit: (parseInt(process.env.USER_PER_PAGE)) }]
-                }
-            }
-
+        const countDtl = await Users.aggregate([
+           { $group:{
+                _id:{
+                   
+                    status:"$status"
+                },
+                count:{$sum:1}
+                } }
         ]);
+var statusObj={};
+        countDtl.forEach(element => {
+            console.log(element);
+             statusObj[element['_id'].status==null?'Pending':constant.status.get(parseInt(element['_id'].status)).key]=
+           parseInt( (statusObj[element['_id'].status==null?'Pending':constant.status.get(parseInt(element['_id'].status)).key])==null?0:(statusObj[element['_id'].status==null?'Pending':constant.status.get(parseInt(element['_id'].status)).key]))+ element.count;
+           
+            
+        });
 
-        if (Object.keys(userList[0].metadata).length > 0) {
-            let totalcount = userList[0].metadata[0].total;
-            let numberOfPages = Math.ceil(parseInt(totalcount) / parseInt(process.env.USER_PER_PAGE));
-            userList[0].metadata[0].numberOfPages = numberOfPages;
-
-        }
-
-
-        if (Object.keys(userList[0].data).length > 0) {
-            await userList[0].data.map(data => {
-                data.idProof1Status = data.idProof1Status == undefined ? '' : constant.status.get(parseInt(data.idProof1Status)).key;
-                data.idProof2Status = data.idProof2Status == undefined ? '' : constant.status.get(parseInt(data.idProof2Status)).key;
-                data.status = data.status == undefined ? '' : constant.status.get(parseInt(data.status)).key;
-            });
-        }
-
-        res.send(userList);
+        res.send(statusObj);
     } catch (error) {
+        console.log(error);
         res.send({
             code: 500,
             message: error.message,
