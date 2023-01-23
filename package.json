@@ -13,6 +13,7 @@
     "@ceramicnetwork/http-client": "^2.10.0",
     "@glazed/did-datastore": "^0.3.2",
     "@glazed/did-session": "^0.1.1",
+    "@heroiclabs/nakama-js": "^2.4.1",
     "@self.id/core": "^0.4.1",
     "@self.id/image-utils": "^0.3.0",
     "bcryptjs": "^2.4.3",
@@ -28,6 +29,7 @@
     "multer": "^1.4.5-lts.1",
     "path": "^0.12.7",
     "sharp": "^0.31.2",
-    "swagger-ui-express": "^4.6.0"
+    "swagger-ui-express": "^4.6.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }

@@ -1,9 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Swagger Documentation for RedSpay Api's",
+        "description": "Swagger Documentation for RedSpy Api's",
         "version": "1.0.0",
-        "title": "RedSpay Api's"
+        "title": "RedSpy Api's"
     },
     "schemes": [
         "http"
@@ -14,7 +14,7 @@
         "/login/signin": {
             "post": {
                 "summary": "Allow users to login",
-                "description": "Allow users to login",
+                "description": "Allow users to login with emailId and password,response with the jwt token",
                 "produces": [
                     "application/json"
                 ],
@@ -30,7 +30,7 @@
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "handleName": {
+                                "emailId": {
                                     "type": "string"
                                 },
                                 "password": {
@@ -49,7 +49,7 @@
                                 "id": {
                                     "type": "string"
                                 },
-                                "handleName": {
+                                "emailId": {
                                     "type": "string"
                                 },
                                 "token": {
@@ -78,7 +78,7 @@
                     "application/json"
                 ],
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -87,19 +87,9 @@
                         "description": "User Signup object",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/UserSignupRequest"
-                        },
-                        "encoding":{
-                            "avatar": {
-                                "contentType": ["image/png", "image/jpeg"]
-                            },
-                            "idProof1": {
-                                "contentType": ["image/png", "image/jpeg"]
-                            }, 
-                            "idProof2": {
-                                "contentType": ["image/png", "image/jpeg"]
-                            }
+                            "$ref": "#/definitions/UserDetails"
                         }
+                        
                     }
                 ],
                 
@@ -119,12 +109,225 @@
                 }
             }
         },
-        "/login/varifyToken": {
+        "/login/getUserById/{emailId}": {
             "get": {
-                "summary": "validate Token",
-                "description": "validate Token",
+                "summary": "Fetch user Details by emailId",
+                "description": "Fetch user Details by emailId",
                 "produces": [
                     "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "emailId",
+                        "in": "path",
+                        "description": "emailId to Fetch user Details by emailId",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/UserDetails"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/signin": {
+            "post": {
+                "summary": "Allow admin users to login",
+                "description": "Allow admin users to login with email id and password",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User Login object",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userName": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "token": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/getUserList/{name}/{status}/{pg}": {
+            "get": {
+                "summary": "Fetch user Details by emailId/name,status and page number",
+                "description": "Fetch user Details by emailId/name,status and page number.name parameter will be null to serch by status",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "name to Fetch user Details by name or emailid",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "description": "status to Fetch user Details by status",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "pg",
+                        "in": "path",
+                        "description": "pg to Fetch user Details with pagination ",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/UserDetails"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/statusCount": {
+            "get": {
+                "summary": "Fetch user count per status",
+                "description": "Fetch user count for each status",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ], 
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Appoved": {
+                                    "type": "string"
+                                },
+                                "Rejected": {
+                                    "type": "string"
+                                },
+                                "Pending": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid status value",
+                        "schema": {
+                            "$ref": "#/definitions/InvalidResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/updateUserStatus": {
+            "post": {
+                "summary": "Allow admin to update user's Id proof status",
+                "description": "Allow admin to update user's Id proof status",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User status object",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "statusDetails": {
+                                    "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "idProof1Status":{
+                    "type":"string"
+                },
+                "idProof2Status": {
+                    "type": "string"
+                },
+                "idProof1Reason":{
+                    "type":"string"
+                },
+                "idProof2Reason":{
+                    "type":"string"
+                }
+            }
+                                }
+                            }
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -156,7 +359,7 @@
                 }
             }
         },
-        "UserSignupRequest": {
+        "UserDetails": {
             "type": "object",
             "properties": {
                 "name": {
@@ -171,7 +374,7 @@
                 "rsLicenceKey": {
                     "type": "string"
                 },
-                "cellName": {
+                "contactNumber": {
                     "type": "string"
                 },
                 "emailId": {
@@ -183,9 +386,7 @@
                 "paypalAccount": {
                     "type": "string"
                 },
-                "joinDate": {
-                    "type": "dateTime"
-                },
+               
                 "avatar": {
                     "type": "string"
                 },
@@ -196,15 +397,45 @@
                     "type": "string"
                 },
                 "idProof1Status": {
-                    "type": "boolean"
+                    "type": "string"
                 }, 
                 "idProof2Status": {
-                    "type": "boolean"
+                    "type": "string"
                 },
                 "status": {
-                    "type": "boolean"
+                    "type": "string"
+                },
+                "idProof1Reason":{
+                    "type":"string"
+                },
+                "idProof2Reason":{
+                    "type":"string"
+                },
+                "reason":{
+                    "type":"string"
                 }
 
+
+            }
+        },
+        "statusDetail": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "idProof1Status":{
+                    "type":"string"
+                },
+                "idProof2Status": {
+                    "type": "string"
+                },
+                "idProof1Reason":{
+                    "type":"string"
+                },
+                "idProof2Reason":{
+                    "type":"string"
+                }
             }
         },
         "SuccessResponse": {
@@ -218,5 +449,6 @@
                 }
             }
         }
+
     }
 }

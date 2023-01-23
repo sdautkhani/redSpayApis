@@ -12,8 +12,10 @@ Enum.register();
 router.post("/signin", async function (request, response) {
     var resultData = [];
     var token;
+    console.log(request.body.userName);
     adminUser.findOne({ userName: request.body.userName }).then(
         async (userDtls) => {
+            console.log(userDtls);
             if (userDtls != null) {
                 await bcrypt.compare(request.body.password, userDtls.password, async (err, result) => {
                     if (err) throw err
@@ -46,7 +48,7 @@ router.post("/signin", async function (request, response) {
                     }
                 });
             } else {
-                response.status(500).json({
+                response.status(400).json({
                     code: 400,
                     message: "Invalid User."
                 });
@@ -234,7 +236,7 @@ router.post("/updateUserStatus", async (request, response) => {
     Users.updateOne({ "_id": request.body._id }, data).then(() => {
         response.status(200).json({
             code: 200,
-            message: 'User created successfully!'
+            message: 'User updated successfully!'
         });
     }).catch(
         (error) => {

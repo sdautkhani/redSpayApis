@@ -5,11 +5,12 @@ const jverify = require("../middleware/JWT.js");
 const bcrypt = require("bcryptjs");
 const Users = require('../model/users');
 const constant=require('../constants.js');
+const Client= require("@heroiclabs/nakama-js").Client;
 //API to SignIN by User name and Password
 router.post("/signin", async function (request, response) {
     var resultData = [];
     var token;
-    Users.findOne({ handleName: request.body.handleName }).then(
+    Users.findOne({ emailId: request.body.emailId }).then(
         async (userDtls) => {
             if (userDtls != null) {
                 await bcrypt.compare(request.body.password, userDtls.password, async (err, result) => {
@@ -17,7 +18,7 @@ router.post("/signin", async function (request, response) {
                     if (result == true) {
                         var data = {
                            
-                            "UserID": userDtls.handleName,
+                            "UserID": userDtls.emailId,
                             "RequestID":"",
                             "RequestorID":"",
                             "ActionID":"",
@@ -36,7 +37,7 @@ router.post("/signin", async function (request, response) {
                         resultData = {
                             token: token,
                             id: userDtls._id,
-                            handleName: userDtls.handleName,
+                            emailId: userDtls.emailId,
                             message: "LoggedIn successful.",
                             code:200,
                         };
@@ -94,6 +95,17 @@ router.post("/register", async (request, response) => {
         
     });
     users.save().then(() => {
+        // const create = true;
+        // const client = new Client("defaultkey", "127.0.0.1", "7350");
+        // console.log(client);
+        // client.authenticateEmail(request.body.emailId, hashedPassword, create, request.body.emailId).then(
+        //   async session => {
+        //     console.log(session);
+        //     console.log("User created")
+        //   }).catch(e => {
+        //     // console.log("error authenticating.");
+        //     console.log(e);
+        //   });
         response.status(200).json({
             code:200,
             message: 'User created successfully!'
@@ -128,7 +140,7 @@ router.post("/register", async (request, response) => {
         }
     );
 });
-//API to SignIN by User name and Password
+
 router.get("/varifyToken", async function (request, response) {
     await jverify.validateToken(request, response).then((data) => {
         if (!data.status) {
@@ -152,6 +164,31 @@ router.get("/varifyToken", async function (request, response) {
             error: error
         });
     })
+
+});
+router.get("/getUserById/:emailId", async function (request, response) {
+   console.log(request.params.id);
+    Users.find({ emailId: request.params.emailId }).then(
+        async (userDtls) => {
+            console.log(userDtls);
+            if(userDtls){
+                response.status(200).send(userDtls);
+            }else{
+                response.status(500).send({
+                    code:500,
+                    message: 'User does not exist!',
+                    
+                });
+            }
+        
+        }).catch((error) => {
+            response.status(500).send({
+                code:500,
+                message: 'Unable to get user details!',
+                error: error
+            });
+        })
+
 
 });
 
