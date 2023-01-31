@@ -89,10 +89,8 @@
                         "schema": {
                             "$ref": "#/definitions/UserDetails"
                         }
-                        
                     }
                 ],
-                
                 "responses": {
                     "200": {
                         "description": "successful operation",
@@ -255,7 +253,7 @@
                 ],
                 "consumes": [
                     "application/json"
-                ], 
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation",
@@ -307,23 +305,23 @@
                                 },
                                 "statusDetails": {
                                     "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string"
-                },
-                "idProof1Status":{
-                    "type":"string"
-                },
-                "idProof2Status": {
-                    "type": "string"
-                },
-                "idProof1Reason":{
-                    "type":"string"
-                },
-                "idProof2Reason":{
-                    "type":"string"
-                }
-            }
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "idProof1Status": {
+                                            "type": "string"
+                                        },
+                                        "idProof2Status": {
+                                            "type": "string"
+                                        },
+                                        "idProof1Reason": {
+                                            "type": "string"
+                                        },
+                                        "idProof2Reason": {
+                                            "type": "string"
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -346,7 +344,6 @@
             }
         }
     },
-   
     "definitions": {
         "InvalidResponse": {
             "type": "object",
@@ -354,8 +351,8 @@
                 "message": {
                     "type": "string"
                 },
-                "error":{
-                    "type":"object"
+                "error": {
+                    "type": "object"
                 }
             }
         },
@@ -386,36 +383,33 @@
                 "paypalAccount": {
                     "type": "string"
                 },
-               
                 "avatar": {
                     "type": "string"
                 },
                 "idProof1": {
                     "type": "string"
-                }, 
+                },
                 "idProof2": {
                     "type": "string"
                 },
                 "idProof1Status": {
                     "type": "string"
-                }, 
+                },
                 "idProof2Status": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "idProof1Reason":{
-                    "type":"string"
+                "idProof1Reason": {
+                    "type": "string"
                 },
-                "idProof2Reason":{
-                    "type":"string"
+                "idProof2Reason": {
+                    "type": "string"
                 },
-                "reason":{
-                    "type":"string"
+                "reason": {
+                    "type": "string"
                 }
-
-
             }
         },
         "statusDetail": {
@@ -424,17 +418,17 @@
                 "status": {
                     "type": "string"
                 },
-                "idProof1Status":{
-                    "type":"string"
+                "idProof1Status": {
+                    "type": "string"
                 },
                 "idProof2Status": {
                     "type": "string"
                 },
-                "idProof1Reason":{
-                    "type":"string"
+                "idProof1Reason": {
+                    "type": "string"
                 },
-                "idProof2Reason":{
-                    "type":"string"
+                "idProof2Reason": {
+                    "type": "string"
                 }
             }
         },
@@ -444,11 +438,10 @@
                 "message": {
                     "type": "string"
                 },
-                "details":{
-                    "type":"object"
+                "details": {
+                    "type": "object"
                 }
             }
         }
-
     }
 }

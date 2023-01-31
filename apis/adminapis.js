@@ -120,40 +120,40 @@ router.get("/getUserList/:name/:status/:pg", async (req, res) => {
     var status = req.params.status;
     var statusConditions = {};
     var statusConditions = {};
-    var searchCondition=[];
-    if (status != "All"){
-        statusConditions.status=(constant.status.get(status).value).toString();
-    } 
-    if(req.params.name!='null'){
-        searchCondition= 
+    var searchCondition = [];
+    if (status != "All") {
+        statusConditions.status = (constant.status.get(status).value).toString();
+    }
+    if (req.params.name != 'null') {
+        searchCondition =
             [
-                { name: req.params.name }, 
+                { name: req.params.name },
                 { emailId: req.params.name }
             ];
-    }else{
-        searchCondition= 
-        [
-            { }, 
-            {  }
-        ];
+    } else {
+        searchCondition =
+            [
+                {},
+                {}
+            ];
     }
     try {
         const userList = await Users.aggregate([
             {
-                $match:  {
+                $match: {
                     ...statusConditions,
-                    $or:[
+                    $or: [
                         ...searchCondition
                     ]
                 }
-                
+
             },
 
             {
                 $facet: {
                     metadata: [{ $count: "total" }],
                     data: [
-                        
+
                         { $sort: { _id: -1 } },
 
                         { $skip: (pageNumber > 0 ? ((pageNumber - 1) * parseInt(process.env.USER_PER_PAGE)) : 0) },
@@ -188,24 +188,26 @@ router.get("/getUserList/:name/:status/:pg", async (req, res) => {
     }
 });
 router.get("/statusCount", async (req, res) => {
- 
+
     try {
         const countDtl = await Users.aggregate([
-           { $group:{
-                _id:{
-                   
-                    status:"$status"
-                },
-                count:{$sum:1}
-                } }
+            {
+                $group: {
+                    _id: {
+
+                        status: "$status"
+                    },
+                    count: { $sum: 1 }
+                }
+            }
         ]);
-var statusObj={};
+        var statusObj = {};
         countDtl.forEach(element => {
             console.log(element);
-             statusObj[element['_id'].status==null?'Pending':constant.status.get(parseInt(element['_id'].status)).key]=
-           parseInt( (statusObj[element['_id'].status==null?'Pending':constant.status.get(parseInt(element['_id'].status)).key])==null?0:(statusObj[element['_id'].status==null?'Pending':constant.status.get(parseInt(element['_id'].status)).key]))+ element.count;
-           
-            
+            statusObj[element['_id'].status == null ? 'Pending' : constant.status.get(parseInt(element['_id'].status)).key] =
+                parseInt((statusObj[element['_id'].status == null ? 'Pending' : constant.status.get(parseInt(element['_id'].status)).key]) == null ? 0 : (statusObj[element['_id'].status == null ? 'Pending' : constant.status.get(parseInt(element['_id'].status)).key])) + element.count;
+
+
         });
 
         res.send(statusObj);
